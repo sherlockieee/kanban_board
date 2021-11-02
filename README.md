@@ -9,11 +9,12 @@ To run this in your local environment, do the following steps:
 ** macOS ** 
 ```
 cd server
-python3.6 -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
 
-python3.6 app.py
+cd kanban
+python3 app.py
 ```
 
 ** Windows **

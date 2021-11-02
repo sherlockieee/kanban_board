@@ -1,12 +1,13 @@
 
 
-import os
-import tempfile
 import pytest
 
-from app import create_app
-from db import get_db
-from db import init_db
+import os
+import tempfile
+
+from kanban.app import create_app
+from kanban.db import get_db
+from kanban.db import init_db
 
 # read in SQL for populating test data
 with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
