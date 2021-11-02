@@ -31,7 +31,7 @@ function App() {
             <h3 className="header">{capitalizeFirstLetter(taskType)}</h3>
             <ul className="lists">
               {allTasks
-                .filter((task) => task.type == taskType)
+                .filter((task) => task.type === taskType)
                 .map((task) => (
                   <Task task={task} setRefresh={setRefresh} />
                 ))}
