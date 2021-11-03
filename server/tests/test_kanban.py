@@ -1,7 +1,7 @@
-from flask import json, jsonify
+from flask import json
 
 
-def test_initialize_database(client):
+def test_initialize_server(client):
     rv = client.get("/")
     assert rv.data == b"Server is running"
 
@@ -29,6 +29,11 @@ def test_get_one_task(client):
     }
 
 
+def test_get_one_task_that_does_not_exist(client):
+    rv = client.get("/api/tasks/5")
+    assert rv.status_code == 400
+
+
 def test_create_task(client):
     rv = client.post(
         "/api/tasks/add",
@@ -45,6 +50,19 @@ def test_create_task(client):
     assert "Task added successfully" in str(rv.data)
 
 
+def test_create_wrong_task(client):
+    rv = client.post(
+        "/api/tasks/add",
+        json={
+            "id": 4,
+            "name": "task 4",
+            "description": "Description 4",
+            "type": "to-do",
+        },
+    )
+    assert rv.status_code == 400
+
+
 def test_update_task(client):
     rv = client.put(
         "/api/tasks/1",
@@ -56,12 +74,11 @@ def test_update_task(client):
         },
     )
     assert rv.status_code == 201
-    assert "task 1 - edited" in rv.data
-    assert "Description 1" not in rv.data
+    assert "task 1 - edited" in str(rv.data)
+    assert "Description 1" not in str(rv.data)
 
 
 def test_delete_task(client):
     rv = client.delete("/api/tasks/2")
     assert rv.status_code == 201
-    assert "task 2" not in rv.data
-    assert "description 2" not in rv.data
+    assert "Task 2 deleted successfully" in str(rv.data)

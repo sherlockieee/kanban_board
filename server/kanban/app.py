@@ -1,22 +1,12 @@
 import os
-from flask import (
-    Flask,
-    request,
-    g,
-    abort,
-    flash,
-    jsonify,
-)
+from flask import Flask, request, g, abort, flash, jsonify, current_app
+from flask.cli import with_appcontext
 import json
 import sqlite3
 import click
-from flask import current_app
-from flask import g
-from flask.cli import with_appcontext
 
 
 def create_app(cfg=None):
-
     app = Flask(__name__)  # create the application instance :)
     app.config.from_mapping(
         DEBUG=True,
@@ -63,7 +53,7 @@ def create_app(cfg=None):
         )
         database.commit()
         flash("New entry was successfully posted")
-        return jsonify({"message": "Task added successfully"}), 201
+        return jsonify({"message": "Task added successfully", "task": new_task}), 201
 
     @app.route("/api/tasks/<task_id>", methods=["GET", "DELETE", "PUT"])
     def task_function(task_id):
@@ -95,7 +85,7 @@ def create_app(cfg=None):
         )
         database.commit()
         flash("Task deleted")
-        return jsonify({"message": "Task deleted successfully"}), 201
+        return jsonify({"message": f"Task {task_id} deleted successfully"}), 201
 
     def update_task(task_id):
         database = get_db()
@@ -111,7 +101,10 @@ def create_app(cfg=None):
         )
         database.commit()
         flash("Task updated")
-        return jsonify({"message": "Task updated successfully"}), 201
+        return (
+            jsonify({"message": f"Task {task_id} updated successfully", "task": task}),
+            201,
+        )
 
     return app
 
