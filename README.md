@@ -20,10 +20,12 @@ python3 app.py
 ** Windows **
 ```
 cd server
-python3.6 -m venv venv
+python3 -m venv venv
 venv\Scripts\activate.bat
 pip3 install -r requirements.txt
-python3.6 app.py
+
+cd kanban
+python3 app.py
 ```
 
 ### Setting up frontend
@@ -37,5 +39,10 @@ And enjoy!
 ---
 ### Testing
 ```
-python3.6 -m unittest discover test
+pytest tests
+```
+
+To see coverage:
+```
+pytest --cov=kanban tests/
 ```

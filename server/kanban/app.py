@@ -13,18 +13,20 @@ def create_app(cfg=None):
         DEVELOPMENT=True,
         SECRET_KEY="development key",
         DATABASE=os.path.join(app.root_path, "kanban.db"),
-    )  # load config from this file
+    )  # load config
     if cfg:
-        app.config.update(cfg)
+        app.config.update(cfg)  # update config as necessary
 
     init_app(app)
 
     @app.route("/")
     def hello_world():
+        """Initialize server"""
         return "Server is running"
 
     @app.route("/api/tasks", methods=["GET"])
     def get_tasks():
+        """get all tasks"""
         database = get_db()
         cur = database.execute(
             "SELECT id, name, description, type FROM tasks ORDER BY id DESC"
@@ -43,6 +45,7 @@ def create_app(cfg=None):
 
     @app.route("/api/tasks/add", methods=["POST"])
     def add_task():
+        """add a single task"""
         if not request.json or not "task" in request.json:
             abort(400)
         new_task = request.json["task"]
@@ -57,6 +60,7 @@ def create_app(cfg=None):
 
     @app.route("/api/tasks/<task_id>", methods=["GET", "DELETE", "PUT"])
     def task_function(task_id):
+        """rerouting depending on methods"""
         if request.method == "GET":
             return get_task(task_id)
         elif request.method == "DELETE":
@@ -65,6 +69,7 @@ def create_app(cfg=None):
             return update_task(task_id)
 
     def get_task(task_id):
+        """get a single task from task ID"""
         database = get_db()
         task = database.execute("SELECT * FROM tasks WHERE id =?", (task_id)).fetchone()
         if not task:
@@ -78,6 +83,7 @@ def create_app(cfg=None):
         return json.dumps(task_obj)
 
     def delete_task(task_id):
+        """delete task of task id from database"""
         database = get_db()
         database.execute(
             "DELETE FROM tasks WHERE id=?",
@@ -88,6 +94,7 @@ def create_app(cfg=None):
         return jsonify({"message": f"Task {task_id} deleted successfully"}), 201
 
     def update_task(task_id):
+        """update task with new data"""
         database = get_db()
         task = {
             "id": task_id,
