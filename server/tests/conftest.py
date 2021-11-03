@@ -1,17 +1,15 @@
-
-
 import pytest
 
 import os
 import tempfile
 
-from kanban.app import create_app
-from kanban.db import get_db
-from kanban.db import init_db
+from kanban.app import create_app, get_db, init_db
+
 
 # read in SQL for populating test data
 with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
     _data_sql = f.read().decode("utf8")
+
 
 @pytest.fixture
 def app():
@@ -43,4 +41,3 @@ def client(app):
 def runner(app):
     """A test runner for the app's Click commands."""
     return app.test_cli_runner()
-
