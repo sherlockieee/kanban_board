@@ -32,6 +32,7 @@ python3 app.py
 ### Setting up frontend
 ```
 cd client
+yarn
 yarn start
 ```
 
