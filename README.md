@@ -13,8 +13,9 @@ python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
 
-cd kanban
-python3 app.py
+export FLASK_APP=kanban.app
+export FLASK_ENV=development
+flask run
 ```
 
 ** Windows **

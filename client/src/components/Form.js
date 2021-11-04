@@ -14,7 +14,7 @@ function Form() {
     };
 
     axios
-      .post("/api/tasks/add", { task })
+      .post("/api/tasks", { task })
       .then((res) => {
         console.log(res);
         setTaskName("");

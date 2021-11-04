@@ -1,9 +1,6 @@
 import os
-from flask import Flask, request, g, abort, flash, jsonify, current_app
-from flask.cli import with_appcontext
-import json
-import sqlite3
-import click
+from flask import Flask, request, abort, flash, jsonify, json
+from kanban.db import init_app, get_db
 
 
 def create_app(cfg=None):
@@ -43,7 +40,7 @@ def create_app(cfg=None):
             result.append(task_obj)
         return json.dumps(result)
 
-    @app.route("/api/tasks/add", methods=["POST"])
+    @app.route("/api/tasks", methods=["POST"])
     def add_task():
         """add a single task"""
         if not request.json or not "task" in request.json:
@@ -58,16 +55,7 @@ def create_app(cfg=None):
         flash("New entry was successfully posted")
         return jsonify({"message": "Task added successfully", "task": new_task}), 201
 
-    @app.route("/api/tasks/<task_id>", methods=["GET", "DELETE", "PUT"])
-    def task_function(task_id):
-        """rerouting depending on methods"""
-        if request.method == "GET":
-            return get_task(task_id)
-        elif request.method == "DELETE":
-            return delete_task(task_id)
-        elif request.method == "PUT":
-            return update_task(task_id)
-
+    @app.route("/api/tasks/<task_id>", methods=["GET"])
     def get_task(task_id):
         """get a single task from task ID"""
         database = get_db()
@@ -82,6 +70,7 @@ def create_app(cfg=None):
         }
         return json.dumps(task_obj)
 
+    @app.route("/api/tasks/<task_id>", methods=["DELETE"])
     def delete_task(task_id):
         """delete task of task id from database"""
         database = get_db()
@@ -93,6 +82,7 @@ def create_app(cfg=None):
         flash("Task deleted")
         return jsonify({"message": f"Task {task_id} deleted successfully"}), 201
 
+    @app.route("/api/tasks/<task_id>", methods=["PUT"])
     def update_task(task_id):
         """update task with new data"""
         database = get_db()
@@ -114,48 +104,6 @@ def create_app(cfg=None):
         )
 
     return app
-
-
-def get_db():
-    """Opens a new database connection if there is none yet for the
-    current application context.
-    """
-    if not hasattr(g, "sqlite_db"):
-        g.sqlite_db = sqlite3.connect(
-            current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES
-        )
-        g.sqlite_db.row_factory = sqlite3.Row
-
-    return g.sqlite_db
-
-
-def close_db(error):
-    """Closes the database again at the end of the request."""
-    if hasattr(g, "sqlite_db"):
-        g.sqlite_db.close()
-
-
-def init_db():
-    db = get_db()
-    with current_app.open_resource("schema.sql", mode="r") as f:
-        db.cursor().executescript(f.read())
-    db.commit()
-
-
-@click.command("initdb")
-@with_appcontext
-def initdb_command():
-    """Initializes the database."""
-    init_db()
-    click.echo("Initialized the database.")
-
-
-def init_app(app):
-    """Register database functions with the Flask app. This is called by
-    the application factory.
-    """
-    app.teardown_appcontext(close_db)
-    app.cli.add_command(initdb_command)
 
 
 if __name__ == "__main__":

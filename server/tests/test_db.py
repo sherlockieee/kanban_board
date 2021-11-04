@@ -1,6 +1,6 @@
 import sqlite3
 import pytest
-from kanban.app import initdb_command, get_db
+from kanban.db import initdb_command, get_db
 
 
 def test_init_db(app):

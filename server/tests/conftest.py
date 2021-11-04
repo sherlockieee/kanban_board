@@ -3,7 +3,8 @@ import pytest
 import os
 import tempfile
 
-from kanban.app import create_app, get_db, init_db
+from kanban.app import create_app
+from kanban.db import get_db, init_db
 
 
 # read in SQL for populating test data

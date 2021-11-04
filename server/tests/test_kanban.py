@@ -41,7 +41,7 @@ def test_get_one_task_that_does_not_exist(client):
 def test_create_task(client):
     """test that we can create a new task"""
     rv = client.post(
-        "/api/tasks/add",
+        "/api/tasks",
         json={
             "task": {
                 "id": 4,
@@ -58,7 +58,7 @@ def test_create_task(client):
 def test_create_wrong_task(client):
     """test that if the json is of the wrong format or doesn't exist, it will return a 400 error"""
     rv = client.post(
-        "/api/tasks/add",
+        "/api/tasks",
         json={
             "id": 4,
             "name": "task 4",
@@ -67,7 +67,7 @@ def test_create_wrong_task(client):
         },
     )
     assert rv.status_code == 400
-    rv = client.post("/api/tasks/add", json={})
+    rv = client.post("/api/tasks", json={})
     assert rv.status_code == 400
 
 
